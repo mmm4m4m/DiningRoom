@@ -1,18 +1,18 @@
 CREATE TABLE users(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   email VARCHAR(100)
   hashed_password VARCHAR(100)
 );
 
 CREATE TABLE clients(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   user_id INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
   ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE employees(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   user_id INTEGER,
   position VARCHAR(50) NOT NULL,
   first_name VARCHAR(100) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE employees(
 );
 
 CREATE TABLE admins(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   user_id INTEGER NOT NULL,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
@@ -31,12 +31,12 @@ CREATE TABLE admins(
 );
 
 CREATE TABLE products(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   name VARCHAR(100) NOT NULL 
 );
 
 CREATE TABLE orders(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   employee_id INTEGER,
   client_id INTEGER,
   total_price FLOAT(10,2),
@@ -48,14 +48,14 @@ CREATE TABLE orders(
 ); 
 
 CREATE TABLE dishes(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   name VARCHAR(255),
   description TEXT,
   price FLOAT(10,2)
 );
 
 CREATE TABLE product_dish(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   product_id INTEGER,
   dish_id INTEGER,
   FOREIGN KEY (product_id) REFERENCES products(id)
@@ -65,7 +65,7 @@ CREATE TABLE product_dish(
 );
 
 CREATE TABLE records(
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   admin_id INTEGER,
   title VARCHAR(255),
   description TEXT,
@@ -74,7 +74,7 @@ CREATE TABLE records(
 );
 
 CREATE TABLE supplies(
-  id SERIAL PRIMARY KEY, 
+  id PRIMARY KEY, 
   admin_id INTEGER,
   date DATE,
   FOREIGN KEY (admin_id) REFERENCES admins(id)
@@ -82,7 +82,7 @@ CREATE TABLE supplies(
 );
 
 CREATE TABLE supply_product (
-  id SERIAL PRIMARY KEY,
+  id PRIMARY KEY,
   supply_id INTEGER,
   product_id INTEGER,
   price FLOAT(10,2),
