@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 
 from src.database.db import DBManager, get_db_manager
 from src.products.resolvers import get, update, create, delete
-from src.products.models import ProductUpdate, ProductInput
+from src.products.models import ProductUpdate, ProductCreate
 
 router = APIRouter(prefix='/products')
 
@@ -31,7 +31,7 @@ def get_product(product_id: int, db_manager: Annotated[DBManager, Depends(get_db
 
 @router.post('/')
 def create_product(
-    product_in: ProductInput, 
+    product_in: ProductCreate, 
     db_manager: Annotated[DBManager, Depends(get_db_manager)]
 ):
     try: 

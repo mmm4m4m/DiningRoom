@@ -1,5 +1,5 @@
 from src.products.resolvers import get, create, update, delete, get_products_by_name
-from src.products.models import ProductInput, ProductUpdate
+from src.products.models import ProductCreate, ProductUpdate
 
 
 def test_get(product, db_manager):
@@ -9,7 +9,7 @@ def test_get(product, db_manager):
 
 
 def test_create(db_manager):
-    product_in = ProductInput(name='Pineapple')
+    product_in = ProductCreate(name='Pineapple')
     create(db_manager=db_manager, product_in=product_in)
     created_product = get_products_by_name(db_manager=db_manager, product_name='Pineapple')
     assert created_product, 'Функция не создала новый продукт'

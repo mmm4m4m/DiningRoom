@@ -1,12 +1,10 @@
 from typing import Annotated
 
-import sqlite3
-
 from fastapi import APIRouter, HTTPException, status, Depends
 
 from src.database.db import get_db_manager, DBManager
 from src.users.utils import check_password
-from src.users.models import UserInput, UserInput
+from src.users.models import UserInput, UserInput, UserCreate
 from src.users.resolvers import (
     get_user_by_email, 
     create, 
@@ -18,7 +16,7 @@ router = APIRouter()
 
 
 @router.post('/register')
-def create_user(user_in: UserInput, db_manager: Annotated[DBManager, Depends(get_db_manager)]):
+def create_user(user_in: UserCreate, db_manager: Annotated[DBManager, Depends(get_db_manager)]):
     try:
         user = get_user_by_email(db_manager=db_manager, email=user_in.email)
         if user:

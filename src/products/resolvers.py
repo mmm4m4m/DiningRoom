@@ -1,7 +1,7 @@
 from typing import Optional
 
 from src.database.db import DBManager
-from src.products.models import ProductInput, ProductRead, ProductUpdate
+from src.products.models import ProductCreate, ProductRead, ProductUpdate
 
 
 def get(*, db_manager: DBManager, product_id: int) -> Optional[ProductRead]:
@@ -28,7 +28,7 @@ def get_products_by_name(*, db_manager: DBManager, product_name: str) -> Optiona
     return product_list
 
 
-def create(*, db_manager: DBManager, product_in: ProductInput) -> int:
+def create(*, db_manager: DBManager, product_in: ProductCreate) -> int:
     params = (product_in.name, )
     created_product_id = db_manager.execute('INSERT INTO products(name) '
                        'VALUES(?) '

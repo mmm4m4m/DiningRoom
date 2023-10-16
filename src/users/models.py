@@ -18,3 +18,7 @@ class UserRead(BaseUser):
 
 class UserInput(BaseUser):
     password: SecretStr = Field(min_length=8, max_length=16)
+
+
+class UserCreate(BaseUser):
+    password: SecretStr = Field(min_length=8, max_length=16)

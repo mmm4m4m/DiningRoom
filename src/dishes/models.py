@@ -2,10 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from src.products.models import ProductRead
 
-
-class DishesBase(BaseModel):
+class DishBase(BaseModel):
     name: str = Field(max_length=255)
     description: str 
     price: float
@@ -22,16 +20,16 @@ class DishesBase(BaseModel):
         return value
 
 
-class DishesRead(DishesBase):
+class DishRead(DishBase):
     id: int
-    products: Optional[list[ProductRead]] = []
+    products: list[str]
 
 
-class DishesList(BaseModel):
-    dishes: Optional[list[DishesRead]] = []
+class DishList(BaseModel):
+    dishes: Optional[list[DishRead]] = []
 
 
-class DishesUpdate(BaseModel):
+class DishUpdate(BaseModel):
     name: Optional[str] = Field(max_length=255)
     description: Optional[str] = None
     price: Optional[float] = None
@@ -48,5 +46,5 @@ class DishesUpdate(BaseModel):
         return value
 
 
-class DishesInput(DishesBase):
+class DishCreate(DishBase):
     product_ids: list[int]

@@ -1,5 +1,5 @@
 from src.users.resolvers import create
-from src.users.models import UserInput
+from src.users.models import UserInput, UserCreate
 
 
 def test_create(client):
@@ -21,7 +21,7 @@ def test_login(db_manager, client):
 
 
 def delete_user(db_manager, client):
-    user_in = UserInput(email='testuser1@example.com', password='12345678')
+    user_in = UserCreate(email='testuser1@example.com', password='12345678')
     create(db_manager=db_manager, user_in=user_in)
     db_manager.commit()
     response = client.delete(f'/{user_in.email}')

@@ -12,10 +12,6 @@ class DBManager:
     def connect(self, db_path: str) -> None:
         self.__connection = sqlite3.connect(db_path)
 
-    @property 
-    def cursor(self):
-        return self.__connection.cursor()
-
     def __check_connection(self) -> None:
         if not self.__connection:
             raise NoConnectionError()
@@ -31,8 +27,9 @@ class DBManager:
 
     def execute(self, query: str, params: tuple[str] = (), many: bool = False) -> None:
         self.__check_connection()
+        cursor = self.__connection.cursor()
         try:
-            result = self.cursor.execute(query, params)
+            result = cursor.execute(query, params)
             if not result:
                 return 
             if many:

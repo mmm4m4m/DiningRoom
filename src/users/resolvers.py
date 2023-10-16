@@ -1,7 +1,7 @@
 from typing import Optional
 
 from src.database.db import DBManager
-from src.users.models import UserInput, UserRead
+from src.users.models import UserRead, UserCreate
 from src.users.utils import get_hashed_password
 
 
@@ -35,7 +35,7 @@ def get_user_hashed_password_by_email(*, db_manager: DBManager, email: str) -> O
     return user[0]
 
 
-def create(*, db_manager: DBManager, user_in: UserInput) -> int:
+def create(*, db_manager: DBManager, user_in: UserCreate) -> int:
     hashed_password = get_hashed_password(user_in.password.get_secret_value())
     params = (user_in.email, hashed_password)
     created_user_id = db_manager.execute('INSERT INTO users(email, hashed_password) '

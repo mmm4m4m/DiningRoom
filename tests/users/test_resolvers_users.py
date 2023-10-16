@@ -1,5 +1,5 @@
 from src.users.resolvers import get, get_user_by_email, create, delete
-from src.users.models import UserInput
+from src.users.models import UserCreate
 
 
 def test_get(user, db_manager):
@@ -17,7 +17,7 @@ def test_get_user_by_email(user, db_manager):
 
 
 def test_create(db_manager):
-    user_in = UserInput(email='new_user@test.com', password='12345678')
+    user_in = UserCreate(email='new_user@test.com', password='12345678')
     create(db_manager=db_manager, user_in=user_in)
     created_user = get_user_by_email(db_manager=db_manager, email='new_user@test.com')
     assert created_user is not None, 'Пользователь не был создан'

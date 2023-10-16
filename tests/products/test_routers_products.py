@@ -1,5 +1,3 @@
-from src.products.resolvers import get
-
 def test_get_product(db_manager, client):
     db_manager.execute('INSERT INTO products VALUES(50, "Avocado")')
     db_manager.commit()
