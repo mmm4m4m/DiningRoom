@@ -3,12 +3,14 @@ import sqlite3
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.database.db import get_db_manager, DBManager
 from src.users.models import UserRead
 from src.users.utils import get_current_user
-from src.database.db import get_db_manager, DBManager
 from src.orders.resolvers import create, get, get_all_waited_orders
 from src.orders.utils import accept_order, complete_order
 from src.orders.models import OrderCreate
+from src.order_dish.resolvers import create as create_od
+from src.order_dish.models import OrderDishesList
 
 router = APIRouter(prefix='/orders')
 
@@ -19,6 +21,22 @@ def get_current_user_orders(
         db_manager: Annotated[DBManager, Depends(get_db_manager)]
     ):
     pass
+
+
+@router.get('/all')
+def all_waited_orders(db_manager: Annotated[DBManager, Depends(get_db_manager)]):
+    try:
+        orders = get_all_waited_orders(db_manager=db_manager)
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=e
+        )
+    finally:
+        db_manager.close()
+    return {'status': status.HTTP_200_OK, 
+            'detail': 'Получены все заказы со статусом "ожидание"', 
+            'data': orders}
 
 
 @router.get('/{order_id}')
@@ -40,23 +58,6 @@ def get_order(db_manager: Annotated[DBManager, Depends(get_db_manager)], order_i
     return {'status': status.HTTP_200_OK, 'detail': f'Получен заказ №{order_id}', 'data': order}
 
 
-
-@router.get('/all')
-def all_waited_orders(db_manager: Annotated[DBManager, Depends(get_db_manager)]):
-    try:
-        orders = get_all_waited_orders(db_manager=db_manager)
-    except sqlite3.Error as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=e
-        )
-    finally:
-        db_manager.close()
-    return {'status': status.HTTP_200_OK, 
-            'detail': 'Получены все заказы со статусом "ожидание"', 
-            'data': orders}
-
-
 @router.post('/')
 def create_order(
         db_manager: Annotated[DBManager, Depends(get_db_manager)], 
@@ -64,6 +65,8 @@ def create_order(
     ):
     try:
         order_id = create(db_manager=db_manager, order_in=order_in)
+        od_list = OrderDishesList(order_id=order_id, dishes_ids=order_in.dishes_ids)
+        create_od(db_manager=db_manager, od_in=od_list)
         db_manager.commit()
     except sqlite3.Error as e:
         raise HTTPException(
@@ -122,4 +125,3 @@ def mark_order_as_completed(
     finally:
         db_manager.close()
     return {'status': status.HTTP_200_OK, 'detail': f'Заказ №{order_id} почемен как выполненный'}
-

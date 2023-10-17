@@ -1,7 +1,13 @@
 from typing import Optional
 
 from src.dishes.models import DishRead, DishList, DishCreate, DishUpdate
-from src.database.db import DBManager, get_db_manager
+from src.database.db import DBManager
+
+
+def dish_read(dish):
+    products = dish[4].split(', ')
+    return DishRead(id=dish[0], name=dish[1], description=dish[2], 
+                    price=dish[3], products=products)
 
 
 def get(*, db_manager: DBManager, dish_id: int) -> Optional[DishRead]:
@@ -15,8 +21,7 @@ def get(*, db_manager: DBManager, dish_id: int) -> Optional[DishRead]:
                               params=params)
     if not dish:
         return None
-    products = dish[4].split(', ')
-    return DishRead(id=dish[0], name=dish[1], description=dish[2], price=dish[3], products=products)
+    return dish_read(dish)
 
 
 def get_all(*, db_manager: DBManager) -> Optional[DishList]:
@@ -28,11 +33,7 @@ def get_all(*, db_manager: DBManager) -> Optional[DishList]:
                                    many=True)
     if not dish_list:
         return None
-    dishes = []
-    for dish in dish_list:
-        products = dish[4].split(', ')
-        dish_read = DishRead(id=dish[0], name=dish[1], description=dish[2], price=dish[3], products=products)
-        dishes.append(dish_read)
+    dishes = [dish_read(dish) for dish in dish_list]
     return DishList(dishes=dishes)
 
 

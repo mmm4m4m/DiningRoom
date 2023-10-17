@@ -1,8 +1,8 @@
 from src.database.db import DBManager
-from src.product_dishes.models import DishProductsRelation
+from src.product_dish.models import DishProductsList
 
 
-def create(*, db_manager: DBManager, pd_in: DishProductsRelation) -> list[int]: 
+def create(*, db_manager: DBManager, pd_in: DishProductsList) -> list[int]: 
     dish_id = pd_in.dish_id
     created_pd_list = []
     for product_id in pd_in.product_ids:

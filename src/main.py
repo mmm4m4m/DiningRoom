@@ -6,7 +6,6 @@ from src.dishes.routers import router as dishes_router
 from src.admins.routers import router as admins_router
 from src.orders.routers import router as orders_router
 
-
 app = FastAPI(title='Dining room')
 
 app.include_router(router=users_router)
