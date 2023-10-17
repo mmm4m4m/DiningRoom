@@ -10,7 +10,6 @@ class EmployeeRead(BaseModel):
 
 
 class EmployeeCreate(BaseModel):
-    user_id: int 
     position: str 
     first_name: str 
     last_name: str 

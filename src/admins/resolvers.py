@@ -18,7 +18,7 @@ def create(*, db_manager: DBManager, admin_in: AdminCreate) -> int:
     admin_id = db_manager.execute('INSERT INTO admin(user_id, first_name, last_name) '
                                   'VALUES(?, ?, ?) '
                                   'RETURNING id ',
-                                  params=params)
+                                  params=params)[0]
     return admin_id
 
 

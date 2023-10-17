@@ -1,5 +1,7 @@
 from typing import Annotated
 
+import sqlite3
+
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from src.database.db import get_db_manager, DBManager
@@ -18,7 +20,7 @@ def create_dish(dish_in: DishCreate, db_manager: Annotated[DBManager, Depends(ge
         pd_in = DishProductsRelation(dish_id=created_dish_id, product_ids=dish_in.product_ids)
         create_pd(db_manager=db_manager, pd_in=pd_in)
         db_manager.commit()
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -32,7 +34,7 @@ def create_dish(dish_in: DishCreate, db_manager: Annotated[DBManager, Depends(ge
 def get_all_dishes(db_manager: Annotated[DBManager, Depends(get_db_manager)]):
     try:
         dishes = get_all(db_manager=db_manager)
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -51,7 +53,7 @@ def get_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_manag
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f'Блюдо с id №{dish_id} не найдено'
             )
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -72,7 +74,7 @@ def delete_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_ma
             )
         delete(db_manager=db_manager, dish_id=dish_id)
         db_manager.commit()
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e

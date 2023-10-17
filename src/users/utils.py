@@ -9,3 +9,7 @@ def check_password(password, hashed_password):
 
 def get_hashed_password(password):
     return password_context.hash(password) 
+
+
+def get_current_user():
+    pass 

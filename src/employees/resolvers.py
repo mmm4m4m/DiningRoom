@@ -16,12 +16,13 @@ def get(*, db_manager: DBManager, employee_id: int) -> Optional[EmployeeRead]:
                         first_name=employee[3], last_name=employee[4])
 
 
-def create(*, db_manager: DBManager, employee_in: EmployeeCreate) -> int:
-    params = (employee_in.user_id, employee_in.position, 
+def create(*, db_manager: DBManager, employee_in: EmployeeCreate, user_id: int) -> int:
+    params = (user_id, employee_in.position, 
               employee_in.first_name, employee_in.last_name)
     employee_id = db_manager.execute('INSERT INTO employees(user_id, position, first_name, last_name) '
-                                     'VALUES(?, ?, ?, ?) ',
-                                     params=params)
+                                     'VALUES(?, ?, ?, ?) '
+                                     'RETURNING id ',
+                                     params=params)[0]
     return employee_id
 
 

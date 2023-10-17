@@ -1,7 +1,7 @@
 from typing import Optional
 
 from src.dishes.models import DishRead, DishList, DishCreate, DishUpdate
-from src.database.db import DBManager
+from src.database.db import DBManager, get_db_manager
 
 
 def get(*, db_manager: DBManager, dish_id: int) -> Optional[DishRead]:

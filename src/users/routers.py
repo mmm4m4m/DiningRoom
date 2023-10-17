@@ -1,8 +1,11 @@
 from typing import Annotated
+import sqlite3
 
 from fastapi import APIRouter, HTTPException, status, Depends
 
 from src.database.db import get_db_manager, DBManager
+from src.clients.resolvers import create as create_client
+from src.clients.models import ClientCreate
 from src.users.utils import check_password
 from src.users.models import UserInput, UserInput, UserCreate
 from src.users.resolvers import (
@@ -24,10 +27,12 @@ def create_user(user_in: UserCreate, db_manager: Annotated[DBManager, Depends(ge
                 status_code=status.HTTP_409_CONFLICT,
                 detail='Пользователь с таким email уже существует'
             )
-        create(db_manager=db_manager, user_in=user_in)
+        created_user_id = create(db_manager=db_manager, user_in=user_in)
+        client_in = ClientCreate(user_id=created_user_id)
+        create_client(db_manager=db_manager, client_in=client_in)
         db_manager.commit()
         created_user = get_user_by_email(db_manager=db_manager, email=user_in.email)
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -48,7 +53,7 @@ def delete_user(user_email: str, db_manager: Annotated[DBManager, Depends(get_db
             )
         delete(db_manager=db_manager, user_email=user_email)
         db_manager.commit()
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -74,7 +79,7 @@ def login(user_in: UserInput, db_manager: Annotated[DBManager, Depends(get_db_ma
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='Неверный пароль'
             )
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e

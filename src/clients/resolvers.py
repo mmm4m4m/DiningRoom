@@ -20,7 +20,7 @@ def create(*, db_manager: DBManager, client_in: ClientCreate) -> int:
     client_id = db_manager.execute('INSERT INTO clients(user_id) '
                                    'VALUES(?) '
                                    'RETURNING id ',
-                                   params=params)
+                                   params=params)[0]
     return client_id
 
 

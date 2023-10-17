@@ -19,7 +19,7 @@ def get_product(product_id: int, db_manager: Annotated[DBManager, Depends(get_db
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f'Продукт с id {product_id} не найден'
             )
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -37,7 +37,7 @@ def create_product(
     try: 
         created_product_id = create(db_manager=db_manager, product_in=product_in)
         db_manager.commit()
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -53,9 +53,15 @@ def delete_product(
     db_manager: Annotated[DBManager, Depends(get_db_manager)]
 ):
     try:
+        product = get(db_manager=db_manager, product_id=product_id)
+        if not product:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'Продукт с id {product_id} не найден'
+            )
         delete(db_manager=db_manager, product_id=product_id)
         db_manager.commit()
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
@@ -80,7 +86,7 @@ def update_product(
             )
         update(db_manager=db_manager, product_id=product_id, product_in=product_in)
         db_manager.commit()
-    except Exception as e:
+    except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e
