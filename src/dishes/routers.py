@@ -6,7 +6,7 @@ from src.database.db import get_db_manager, DBManager
 from src.dishes.models import DishCreate
 from src.product_dishes.resolvers import create as create_pd
 from src.product_dishes.models import DishProductsRelation
-from src.dishes.resolvers import create, get, get_all
+from src.dishes.resolvers import create, get, get_all, delete
 
 router = APIRouter(prefix='/dishes')
 
@@ -59,3 +59,24 @@ def get_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_manag
     finally:
         db_manager.close()
     return {'status': status.HTTP_200_OK, 'detail': f'Получено блюдо №{dish_id}', 'data': dish}
+
+
+@router.delete('/{dish_id}')
+def delete_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_manager)]):
+    try:
+        dish = get(db_manager=db_manager, dish_id=dish_id)
+        if not dish:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f'Блюдо с id №{dish_id} не найдено'
+            )
+        delete(db_manager=db_manager, dish_id=dish_id)
+        db_manager.commit()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=e
+        )
+    finally:
+        db_manager.close()
+    return {'status': status.HTTP_200_OK, 'detail': f'Блюдо №{dish_id} удалено'}
