@@ -21,11 +21,11 @@ class DBManager:
         self.__connection.close()
         self.__connection = None
 
-    def rollback(self):
+    def rollback(self) -> None:
         self.__check_connection()
         self.__connection.rollback()
 
-    def execute(self, query: str, params: tuple[str] = (), many: bool = False) -> None:
+    def execute(self, query: str, params: tuple[str] = (), many: bool = False):
         self.__check_connection()
         cursor = self.__connection.cursor()
         try:
