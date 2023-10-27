@@ -2,6 +2,7 @@ from typing import Annotated
 import sqlite3
 
 from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.responses import JSONResponse
 
 from src.database.db import get_db_manager, DBManager
 from src.clients.resolvers import create as create_client
@@ -39,7 +40,8 @@ def create_user(user_in: UserCreate, db_manager: Annotated[DBManager, Depends(ge
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_201_CREATED, 'detail': 'Пользован создан', 'data': created_user}
+    json_data = {'detail': 'Пользован создан', 'data': created_user.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.delete('/{user_email}')
@@ -60,7 +62,8 @@ def delete_user(user_email: str, db_manager: Annotated[DBManager, Depends(get_db
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': 'Пользователь удален'}
+    json_data = {'detail': 'Пользователь удален'}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.post('/login')
@@ -86,4 +89,5 @@ def login(user_in: UserInput, db_manager: Annotated[DBManager, Depends(get_db_ma
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': 'Авторизован', 'data': user}
+    json_data = {'detail': 'Авторизован', 'data': user.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.database.db import DBManager, get_db_manager
+from src.database.db import DBManager
 from src.orders.models import OrderCreate, OrderRead, OrderList
 
 

@@ -3,6 +3,7 @@ from typing import Annotated
 import sqlite3
 
 from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi.responses import JSONResponse
 
 from src.database.db import get_db_manager, DBManager
 from src.dishes.models import DishCreate
@@ -27,8 +28,8 @@ def create_dish(dish_in: DishCreate, db_manager: Annotated[DBManager, Depends(ge
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_201_CREATED, 'detail': f'Блюдо №{created_dish_id} создано'}
-
+    json_data = {'detail': f'Блюдо №{created_dish_id} создано'}
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=json_data)
 
 @router.get('/')
 def get_all_dishes(db_manager: Annotated[DBManager, Depends(get_db_manager)]):
@@ -41,8 +42,8 @@ def get_all_dishes(db_manager: Annotated[DBManager, Depends(get_db_manager)]):
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': 'Получены блюда', 'data': dishes}
-
+    json_data = {'detail': 'Получены блюда', 'data': dishes.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 @router.get('/{dish_id}')
 def get_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_manager)]):
@@ -60,8 +61,8 @@ def get_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_manag
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Получено блюдо №{dish_id}', 'data': dish}
-
+    json_data = {'detail': f'Получено блюдо №{dish_id}', 'data': dish.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 @router.delete('/{dish_id}')
 def delete_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_manager)]):
@@ -81,4 +82,5 @@ def delete_dish(dish_id: int, db_manager: Annotated[DBManager, Depends(get_db_ma
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Блюдо №{dish_id} удалено'}
+    json_data = {'detail': f'Блюдо №{dish_id} удалено'}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)

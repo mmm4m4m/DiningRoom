@@ -2,6 +2,7 @@ import sqlite3
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.responses import JSONResponse
 
 from src.database.db import DBManager, get_db_manager
 from src.supplies.resolvers import create, get
@@ -32,7 +33,8 @@ def create_supply(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_201_CREATED, 'detail': 'Поставки и поставленные продукты созданы'}
+    json_data = {'detail': 'Поставки и поставленные продукты созданы'}
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=json_data)
 
 
 @router.get('/{supply_id}')
@@ -54,5 +56,6 @@ def get_supply(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Поставка №{supply_id}', 'data': supply}
+    json_data = {'detail': f'Поставка №{supply_id}', 'data': supply.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 

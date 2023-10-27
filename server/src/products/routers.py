@@ -2,6 +2,7 @@ import sqlite3
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.responses import JSONResponse
 
 from src.database.db import DBManager, get_db_manager
 from src.products.resolvers import get, update, create, delete
@@ -26,7 +27,8 @@ def get_product(product_id: int, db_manager: Annotated[DBManager, Depends(get_db
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Получен продукт №{product_id}', 'data': product}
+    json_data = {'detail': f'Получен продукт №{product_id}', 'data': product.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.post('/')
@@ -44,7 +46,8 @@ def create_product(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_201_CREATED, 'detail': f'Продукт №{created_product_id} создан'}
+    json_data = {'detail': f'Продукт №{created_product_id} создан'}
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=json_data)
 
 
 @router.delete('/{product_id}')
@@ -68,7 +71,8 @@ def delete_product(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': 'Продукт удален'}
+    json_data = {'detail': 'Продукт удален'}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.put('/{product_id}')
@@ -93,4 +97,5 @@ def update_product(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': 'Продукт обновлен'}
+    json_data = {'detail': 'Продукт обновлен'}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)

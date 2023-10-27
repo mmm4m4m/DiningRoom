@@ -2,6 +2,7 @@ from typing import Annotated
 import sqlite3
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 
 from src.database.db import get_db_manager, DBManager
 from src.users.models import UserRead
@@ -27,6 +28,11 @@ def get_current_user_orders(
 def all_waited_orders(db_manager: Annotated[DBManager, Depends(get_db_manager)]):
     try:
         orders = get_all_waited_orders(db_manager=db_manager)
+        if not orders:
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={'detail': 'Новых заказов нет'}
+            )
     except sqlite3.Error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -34,9 +40,8 @@ def all_waited_orders(db_manager: Annotated[DBManager, Depends(get_db_manager)])
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 
-            'detail': 'Получены все заказы со статусом "ожидание"', 
-            'data': orders}
+    json_data = {'detail': 'Получены все заказы со статусом "ожидание"', 'data': orders.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.get('/{order_id}')
@@ -55,7 +60,8 @@ def get_order(db_manager: Annotated[DBManager, Depends(get_db_manager)], order_i
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Получен заказ №{order_id}', 'data': order}
+    json_data = {'detail': f'Получен заказ №{order_id}', 'data': order.model_dump()}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.post('/')
@@ -75,7 +81,8 @@ def create_order(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_201_CREATED, 'detail': f'Создан заказ №{order_id}'}
+    json_data = {'detail': f'Создан заказ №{order_id}'}
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=json_data)
 
 
 @router.post('/{order_id}/accept')
@@ -100,7 +107,8 @@ def mark_order_as_accepted(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Заказ №{order_id} почемен как принятый'}
+    json_data = {'detail': f'Заказ №{order_id} почемен как принятый'}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
 
 
 @router.post('/{order_id}/complete')
@@ -124,4 +132,5 @@ def mark_order_as_completed(
         )
     finally:
         db_manager.close()
-    return {'status': status.HTTP_200_OK, 'detail': f'Заказ №{order_id} почемен как выполненный'}
+    json_data = {'detail': f'Заказ №{order_id} почемен как выполненный'}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=json_data)
